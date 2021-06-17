@@ -1,0 +1,37 @@
+.countButton {
+    position: absolute;
+    bottom: 0;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    vertical-align: middle;
+    background: gray;
+    opacity: 0.75;
+    display: none;
+}
+
+.countButtonPlus {
+    right: 0;
+    border-radius: 3px 0 0 0;
+}
+
+.countButtonMinus {
+    left: 0;
+    border-radius: 0 3px 0 0;
+}
+
+.square:hover .countButton, .countButton:hover {
+    display: inline-block;
+}
+
+.counter {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    vertical-align: middle;
+}
