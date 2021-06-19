@@ -35,3 +35,11 @@
     text-align: center;
     vertical-align: middle;
 }
+
+.bg-color ~ .counter, .bg-color ~ .countButton {
+    display: none !important;
+}
+
+.counterGreen {
+    color: green;
+}
