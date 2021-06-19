@@ -22,10 +22,21 @@ chrome.runtime.sendMessage({}, function(response) {
 				return roomId + "_" + id;
 			}
 
+			// A function to try and guess at the "max" num for a value
+			getPossibleMaxNum = function(elem) {
+				var text = elem.children(".text-container").text();
+				var match = text.match(/ (\d+) /);
+				if (match) {
+					return parseInt(match[1]);
+				}
+				return undefined;
+			}
+
 			// A function to update all the counter elements
 			updateCounters = function() {
 				$(".counter").each(function() {
 					var storageKey = getStorageKey($(this).parent());
+					var num = getPossibleMaxNum($(this).parent());
 					var _this = this;
 
 					chrome.storage.sync.get(storageKey, function(result) {
@@ -35,6 +46,12 @@ chrome.runtime.sendMessage({}, function(response) {
 						} else {
 							$(_this).text(current);
 							$(_this).removeClass("hidden");
+						}
+
+						if (num != undefined && current >= num) {
+							$(_this).addClass("counterGreen");
+						} else {
+							$(_this).removeClass("counterGreen");
 						}
 					});
 				});
