@@ -1,7 +1,18 @@
-chrome.runtime.sendMessage({}, function(response) {
-	var readyStateCheckInterval = setInterval(function() {
-		if (document.readyState === "complete" && $(".square").length > 0) {
+chrome.runtime.sendMessage({}, function (response) {
+	var readyStateCheckInterval = setInterval(function () {
+		if (document.readyState === "complete" && $(".square").length > 0 && $(".square").first().children().length > 0) {
 			clearInterval(readyStateCheckInterval);
+
+			// Setup CSS
+			chrome.storage.sync.get(
+				{ show_when_complete: false },
+				(items) => {
+					if (!items.show_when_complete) {
+						$("<style type='text/css'> .bg-color ~ .counter, .bg-color ~ .countButton { display: none !important; } </style>").appendTo("head");
+					}
+				}
+			);
+
 
 			// Get room ID
 			var roomId = window.sessionStorage.getItem("room");
@@ -12,7 +23,7 @@ chrome.runtime.sendMessage({}, function(response) {
 			$(".square").append('<div class="counter hidden"></div>');
 
 			// A function to get the storage key for a particular square
-			getStorageKey = function(elem) {
+			getStorageKey = function (elem) {
 				var idRaw = elem.attr("id");
 				if (!idRaw.startsWith("slot")) {
 					return; // sanity check
@@ -23,7 +34,7 @@ chrome.runtime.sendMessage({}, function(response) {
 			}
 
 			// A function to try and guess at the "max" num for a value
-			getPossibleMaxNum = function(elem) {
+			getPossibleMaxNum = function (elem) {
 				var text = elem.children(".text-container").text();
 				var match = text.match(/ (\d+) /);
 				if (match) {
@@ -33,13 +44,13 @@ chrome.runtime.sendMessage({}, function(response) {
 			}
 
 			// A function to update all the counter elements
-			updateCounters = function() {
-				$(".counter").each(function() {
+			updateCounters = function () {
+				$(".counter").each(function () {
 					var storageKey = getStorageKey($(this).parent());
 					var num = getPossibleMaxNum($(this).parent());
 					var _this = this;
 
-					chrome.storage.sync.get(storageKey, function(result) {
+					chrome.storage.sync.get(storageKey, function (result) {
 						var current = result[storageKey];
 						if (current == undefined || current == 0) {
 							$(_this).addClass("hidden");
@@ -61,14 +72,14 @@ chrome.runtime.sendMessage({}, function(response) {
 			updateCounters();
 
 			// Handle button clicks
-			$(".countButton").click(function(event) {
+			$(".countButton").click(function (event) {
 				// Stop click from propagating to parent (and triggering bingo square)
 				event.stopPropagation();
 
 				// Get the current value of our square's counter
 				var storageKey = getStorageKey($(this).parent());
 				var _this = this;
-				chrome.storage.sync.get(storageKey, function(result) {
+				chrome.storage.sync.get(storageKey, function (result) {
 					var current = result[storageKey];
 					if (current == undefined) {
 						current = 0;
@@ -82,9 +93,9 @@ chrome.runtime.sendMessage({}, function(response) {
 					}
 
 					// Send the new value back to storage
-					var  d = {}
+					var d = {}
 					d[storageKey] = current;
-					chrome.storage.sync.set(d, function() {
+					chrome.storage.sync.set(d, function () {
 						// Update all counters
 						updateCounters();
 					});
@@ -92,8 +103,8 @@ chrome.runtime.sendMessage({}, function(response) {
 			});
 
 			// When someone resets the counters via right click, update
-			chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-				if(typeof message === 'object' && message.type === 'resetBingosyncCounters') {
+			chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+				if (typeof message === 'object' && message.type === 'resetBingosyncCounters') {
 					updateCounters();
 				}
 			});

@@ -1,19 +1,21 @@
 {
   "name": "Bingosync Counters",
-  "version": "1.0.0",
-  "manifest_version": 2,
+  "version": "1.1.0",
+  "manifest_version": 3,
   "description": "A simple extension that adds persistent counters to Bingosync squares",
   "icons": {
     "128": "icons/icon128.png"
   },
   "permissions": [
-    "https://bingosync.com/room/*",
     "storage",
     "contextMenus"
   ],
+  "host_permissions": [
+    "https://bingosync.com/room/*"
+  ],
   "background": {
-    "persistent": false,
-    "scripts": ["src/bg/background.js"]
+    "service_worker": "src/bg/background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -34,5 +36,9 @@
       ],
       "run_at": "document_end"
     }
-  ]
+  ],
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": false
+  }
 }
